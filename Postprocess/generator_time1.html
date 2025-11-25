@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time QR Code Generator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f0f0f0; /* Lighter page background */
+            color: #333;
+        }
+        h1 {
+            color: #111;
+        }
+        #qrcode {
+            /* Increased padding to create a larger visual margin ("quiet zone") */
+            padding: 40px; 
+            background-color: #ffffff; /* White background to blend with QR code */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Added a subtle shadow for depth */
+            border-radius: 8px; /* Added rounded corners */
+        }
+        #timestamp {
+            margin-top: 24px;
+            font-size: 1.5em;
+            font-family: monospace;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Time QR Code Generator</h1>
+    <div id="qrcode"></div>
+    <p id="timestamp"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <script>
+        const qrCodeElement = document.getElementById('qrcode');
+        const timestampElement = document.getElementById('timestamp');
+        let qrCodeInstance = null;
+
+        function generateQRCode(text) {
+            if (qrCodeInstance) {
+                // If QR code already exists, just update the data
+                qrCodeInstance.makeCode(text);
+            } else {
+                // Otherwise, create a new QR code instance
+                qrCodeInstance = new QRCode(qrCodeElement, {
+                    text: text,
+                    width: 800,
+                    height: 800,
+                    correctLevel: QRCode.CorrectLevel.L, // Lowest error correction for the simplest pattern
+                    colorDark: "#000000",      
+                    colorLight: "#ffffff", // Use pure white for the light areas
+                });
+            }
+        }
+        
+        // This function runs repeatedly
+        setInterval(() => {
+            // --- CHANGE 1: Use seconds instead of milliseconds for simpler data ---
+            const nowInSeconds = Math.floor(Date.now() / 1000).toString();
+            
+            generateQRCode(nowInSeconds);
+            
+            // Update the displayed text to show seconds
+            timestampElement.textContent = `Current Timestamp (s): ${nowInSeconds}`;
+
+        // --- CHANGE 2: Update every 1000ms (1 second) to match the new data ---
+        }, 1000);
+    </script>
+</body>
+</html>

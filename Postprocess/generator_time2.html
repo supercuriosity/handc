@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simplified Time QR Code Generator (HH:MM:SS:ms)</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #333333;
+            color: #F5F5F5;
+        }
+        #qrcode {
+            width: 800px;
+            height: 800px;
+            border: 1px solid #333333;
+            padding: 20px;
+            background-color: white; /* QR Code background should be white */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #info {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-family: monospace;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simplified Time QR Code (with Hours)</h1>
+    <div id="qrcode"></div>
+    <p id="info"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <script>
+        const qrCodeElement = document.getElementById('qrcode');
+        const infoElement = document.getElementById('info');
+        let qrCodeInstance = null;
+
+        function generateSimplifiedQRCode() {
+            // 1. 获取当前时间 (新增小时)
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0'); // <-- 新增此行
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+
+            // 2. 创建新的简化时间字符串 (HHMMSSsss)
+            const simplifiedTime = `${hours}${minutes}${seconds}${milliseconds}`; // <-- 修改此行
+
+            // 3. 使用这个极短的字符串生成QR码
+            if (qrCodeInstance) {
+                qrCodeInstance.makeCode(simplifiedTime);
+            } else {
+                qrCodeInstance = new QRCode(qrCodeElement, {
+                    text: simplifiedTime,
+                    width: 760,
+                    height: 760,
+                    correctLevel: QRCode.CorrectLevel.L,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                });
+            }
+
+            // 4. 在页面上显示完整时间和被编码的简化时间，方便调试
+            const fullTimestamp = now.toLocaleTimeString('zh-CN', { hour12: false }) + `.${milliseconds}`;
+            infoElement.innerHTML = `Current Time: ${fullTimestamp}<br>Encoded Data: ${simplifiedTime}`;
+        }
+
+        // 保持100毫秒的更新频率
+        setInterval(generateSimplifiedQRCode, 100);
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time QR Code Generator</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #333333;
+        }
+        #qrcode {
+            width: 800px;
+            height: 800px;
+            border: 1px solid #333333;;
+            padding: 20px;
+            background-color: #555555;
+        }
+        #timestamp {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Time QR Code Generator</h1>
+    <div id="qrcode"></div>
+    <p id="timestamp"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <script>
+        const qrCodeElement = document.getElementById('qrcode');
+        const timestampElement = document.getElementById('timestamp');
+        let qrCodeInstance = null;
+
+        function generateQRCode(text) {
+            if (qrCodeInstance) {
+                qrCodeInstance.makeCode(text);
+            } else {
+                qrCodeInstance = new QRCode(qrCodeElement, {
+                    text: text,
+                    width: 800,
+                    height: 800,
+                    correctLevel: QRCode.CorrectLevel.L,
+                    colorDark: "#000000",      
+                    colorLight: "#F5F5F5",
+                });
+            }
+        }
+        <!--update every 10 milliseconds -->
+        setInterval(() => {
+            const now = Date.now().toString();
+            generateQRCode(now);
+            timestampElement.textContent = `Current Timestamp (ms): ${now}`;
+        }, 50);
+    </script>
+</body>
+</html>
